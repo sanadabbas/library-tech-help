@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Library Tech Help</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f4f1eb;
+    --card: #fffef9;
+    --navy: #1a2e4a;
+    --navy-light: #2a4a72;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --text: #1a1a1a;
+    --muted: #6b6560;
+    --border: #ddd8ce;
+    --user-bg: #1a2e4a;
+    --ai-bg: #fffef9;
+    --shadow: 0 4px 24px rgba(26,46,74,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Header */
+  header {
+    width: 100%;
+    background: var(--navy);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 3px solid var(--gold);
+    min-height: 70px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .header-icon {
+    width: 38px;
+    height: 38px;
+    background: var(--gold);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    color: #fff;
+    font-size: 1.25rem;
+    line-height: 1.2;
+  }
+
+  .header-subtitle {
+    color: var(--gold-light);
+    font-size: 0.75rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .header-badge {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid var(--gold);
+    color: var(--gold-light);
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  /* Main layout */
+  .main {
+    width: 100%;
+    max-width: 780px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem 0;
+    gap: 1.5rem;
+  }
+
+  /* Quick help chips */
+  .quick-help {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .quick-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    width: 100%;
+    margin-bottom: 2px;
+  }
+
+  .chip {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    color: var(--navy);
+    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-weight: 500;
+  }
+
+  .chip:hover {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(26,46,74,0.15);
+  }
+
+  /* Chat window */
+  .chat-window {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    flex: 1;
+    min-height: 340px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: var(--shadow);
+    scroll-behavior: smooth;
+  }
+
+  .chat-window::-webkit-scrollbar { width: 5px; }
+  .chat-window::-webkit-scrollbar-track { background: transparent; }
+  .chat-window::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  /* Welcome state */
+  .welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+    gap: 12px;
+    padding: 2rem 0;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .welcome-icon {
+    font-size: 3rem;
+    margin-bottom: 4px;
+  }
+
+  .welcome h2 {
+    font-family: 'DM Serif Display', serif;
+    color: var(--navy);
+    font-size: 1.4rem;
+  }
+
+  .welcome p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 360px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* Messages */
+  .message {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: slideUp 0.25s ease;
+    max-width: 88%;
+  }
+
+  .message.user { align-self: flex-end; align-items: flex-end; }
+  .message.assistant { align-self: flex-start; align-items: flex-start; }
+
+  .msg-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    padding: 0 4px;
+  }
+
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    font-weight: 400;
+  }
+
+  .message.user .msg-bubble {
+    background: var(--navy);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+
+  .message.assistant .msg-bubble {
+    background: var(--bg);
+    color: var(--text);
+    border: 1.5px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  /* Typing indicator */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    border-bottom-left-radius: 4px;
+    width: fit-content;
+  }
+
+  .typing-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--navy-light);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  /* Input area */
+  .input-area {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+
+  textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text);
+    resize: none;
+    min-height: 42px;
+    max-height: 120px;
+    line-height: 1.55;
+    padding: 4px 0;
+  }
+
+  textarea::placeholder { color: #b0a99e; }
+
+  .send-btn {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.18s;
+    font-size: 1.1rem;
+  }
+
+  .send-btn:hover { background: var(--navy-light); transform: scale(1.05); }
+  .send-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
+
+  /* API key notice */
+  .api-notice {
+    background: #fff8e7;
+    border: 1.5px solid var(--gold);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.8rem;
+    color: #7a5c10;
+    line-height: 1.5;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-icon">📚</div>
+    <div>
+      <div class="header-title">Library Tech Help</div>
+      <div class="header-subtitle">Macomb County Library — Technology Support</div>
+    </div>
+  </div>
+  <div class="header-badge">AI-Powered Assistant</div>
+</header>
+
+<div class="main">
+
+  <div class="api-notice">
+    ⚠️ <span>To run this app, open the HTML file and add your Anthropic API key where indicated in the JavaScript. Then host on GitHub Pages for a live URL.</span>
+  </div>
+
+  <div>
+    <div class="quick-label">Common issues — tap to ask</div>
+    <div class="quick-help">
+      <button class="chip" onclick="quickAsk('My printer isn\'t working')">🖨️ Printer not working</button>
+      <button class="chip" onclick="quickAsk('I can\'t connect to the WiFi')">📶 Can't connect to WiFi</button>
+      <button class="chip" onclick="quickAsk('How do I log into my email?')">📧 Access my email</button>
+      <button class="chip" onclick="quickAsk('How do I save and print a document in Microsoft Word?')">📄 Print a Word document</button>
+      <button class="chip" onclick="quickAsk('The computer screen is frozen')">🖥️ Screen is frozen</button>
+      <button class="chip" onclick="quickAsk('How do I scan a document?')">🔍 Scan a document</button>
+    </div>
+  </div>
+
+  <div class="chat-window" id="chatWindow">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">💬</div>
+      <h2>How can I help you today?</h2>
+      <p>Ask me anything about the library computers, printers, WiFi, or other technology. I'm here to help.</p>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <textarea
+      id="userInput"
+      placeholder="Describe your tech issue..."
+      rows="1"
+      onkeydown="handleKey(event)"
+      oninput="autoResize(this)"
+    ></textarea>
+    <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+  </div>
+
+</div>
+
+<script>
+  // ─── CONFIGURATION ───────────────────────────────────────────────
+  const API_KEY = "YOUR_ANTHROPIC_API_KEY_HERE"; // Replace with your key
+  const MODEL   = "claude-sonnet-4-20250514";
+
+  const SYSTEM_PROMPT = `You are a friendly, patient technology support assistant for the Macomb County Public Library. Your job is to help library patrons — many of whom are not tech-savvy — solve common technology problems.
+
+You help with:
+- Library computers (Windows): logging in, saving files, navigating the desktop
+- Printing and scanning: how to print, fix paper jams, scan documents
+- Microsoft Office: Word, Excel, PowerPoint basics
+- Internet browsers: Chrome, Firefox — clearing cache, tabs, bookmarks
+- WiFi connectivity: connecting to the library's wireless network
+- Email: accessing Gmail, Outlook, or Yahoo Mail
+- Library digital resources: eBooks, eMagazines, downloadable content
+- Audiovisual equipment in study rooms
+
+Guidelines:
+- Always be warm, patient, and encouraging — never make people feel bad for not knowing something
+- Give clear numbered steps that are easy to follow
+- Use plain language, avoid jargon
+- If you don't know something, say so honestly and suggest they ask library staff
+- Keep responses focused and not too long`;
+
+  // ─── STATE ───────────────────────────────────────────────────────
+  let messages = [];
+  let isLoading = false;
+
+  // ─── UI HELPERS ──────────────────────────────────────────────────
+  function autoResize(el) {
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 120) + "px";
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function quickAsk(text) {
+    document.getElementById("userInput").value = text;
+    sendMessage();
+  }
+
+  function removeWelcome() {
+    const w = document.getElementById("welcome");
+    if (w) w.remove();
+  }
+
+  function appendMessage(role, content) {
+    removeWelcome();
+    const window = document.getElementById("chatWindow");
+    const div = document.createElement("div");
+    div.className = `message ${role}`;
+    div.innerHTML = `
+      <div class="msg-label">${role === "user" ? "You" : "Library Help"}</div>
+      <div class="msg-bubble">${content.replace(/\n/g, "<br>")}</div>
+    `;
+    window.appendChild(div);
+    window.scrollTop = window.scrollHeight;
+    return div;
+  }
+
+  function showTyping() {
+    removeWelcome();
+    const window = document.getElementById("chatWindow");
+    const div = document.createElement("div");
+    div.className = "message assistant";
+    div.id = "typingIndicator";
+    div.innerHTML = `
+      <div class="msg-label">Library Help</div>
+      <div class="typing-indicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    `;
+    window.appendChild(div);
+    window.scrollTop = window.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById("typingIndicator");
+    if (t) t.remove();
+  }
+
+  // ─── MAIN SEND FUNCTION ──────────────────────────────────────────
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text || isLoading) return;
+
+    isLoading = true;
+    document.getElementById("sendBtn").disabled = true;
+    input.value = "";
+    input.style.height = "auto";
+
+    appendMessage("user", text);
+    messages.push({ role: "user", content: text });
+    showTyping();
+
+    try {
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          max_tokens: 1000,
+          system: SYSTEM_PROMPT,
+          messages: messages
+        })
+      });
+
+      const data = await response.json();
+      removeTyping();
+
+      if (data.content && data.content[0]) {
+        const reply = data.content[0].text;
+        messages.push({ role: "assistant", content: reply });
+        appendMessage("assistant", reply);
+      } else {
+        appendMessage("assistant", "Sorry, I had trouble responding. Please try again or ask a staff member for help.");
+      }
+
+    } catch (err) {
+      removeTyping();
+      appendMessage("assistant", "I'm having trouble connecting right now. Please ask a staff member for assistance.");
+    }
+
+    isLoading = false;
+    document.getElementById("sendBtn").disabled = false;
+    input.focus();
+  }
+</script>
+</body>
+</html>
